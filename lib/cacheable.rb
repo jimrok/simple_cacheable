@@ -32,6 +32,7 @@ module Cacheable
 
           class_eval <<-EOF
             after_commit :expire_attribute_cache, :on => :update
+            after_touch :expire_attribute_cache
             after_commit :expire_all_attribute_cache, :on => :update
           EOF
 
