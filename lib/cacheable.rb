@@ -40,7 +40,7 @@ module Cacheable
             class_eval <<-EOF
               def self.find_cached_by_#{attribute}(value)
                 self.cached_indices["#{attribute}"] ||= []
-                self.cached_indices["#{attribute}"] << value
+                self.cached_indices["#{attribute}"] << value unless self.cached_indices["#{attribute}"].include?(value)
                 Rails.cache.fetch attribute_cache_key("#{attribute}", value) do
                   self.find_by_#{attribute}(value)
                 end
@@ -48,7 +48,7 @@ module Cacheable
 
               def self.find_cached_all_by_#{attribute}(value)
                 self.cached_indices["#{attribute}"] ||= []
-                self.cached_indices["#{attribute}"] << value
+                self.cached_indices["#{attribute}"] << value unless self.cached_indices["#{attribute}"].include?(value)
                 Rails.cache.fetch all_attribute_cache_key("#{attribute}", value) do
                   self.find_all_by_#{attribute}(value)
                 end
