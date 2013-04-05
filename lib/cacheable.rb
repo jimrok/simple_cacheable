@@ -42,7 +42,10 @@ module Cacheable
                 self.cached_indices["#{attribute}"] ||= []
                 self.cached_indices["#{attribute}"] << value unless self.cached_indices["#{attribute}"].include?(value)
                 Rails.cache.fetch attribute_cache_key("#{attribute}", value) do
-                  self.find_by_#{attribute}(value)
+                  o_find = self.find_by_#{attribute}(value)
+                  if (o_find) then
+                    o_find.after_cache_load
+                  end
                 end
               end
 
@@ -216,6 +219,10 @@ module Cacheable
         expire_association_cache(assoc)
       end
     end
+  end
+
+  def after_cache_load
+
   end
 
   def expire_key_cache
