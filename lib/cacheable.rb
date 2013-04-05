@@ -46,6 +46,7 @@ module Cacheable
                   if (o_find) then
                     o_find.after_cache_load
                   end
+                  o_find
                 end
               end
 
