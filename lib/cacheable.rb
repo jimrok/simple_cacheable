@@ -20,7 +20,7 @@ module Cacheable
             after_commit :expire_key_cache, :on => :update
 
             def self.find_cached(id)
-              Rails.cache.fetch "#{name.tableize}/" + id.to_i.to_s do
+              Rails.cache.fetch "#{table_name}/" + id.to_i.to_s do
                 self.find(id)
               end
             end
@@ -191,15 +191,15 @@ module Cacheable
         end
 
         def attribute_cache_key(attribute, value)
-          "#{name.tableize}/attribute/#{attribute}/#{URI.escape(value.to_s)}"
+          "#{table_name}/attribute/#{attribute}/#{URI.escape(value.to_s)}"
         end
 
         def all_attribute_cache_key(attribute, value)
-          "#{name.tableize}/attribute/#{attribute}/all/#{URI.escape(value.to_s)}"
+          "#{table_name}/attribute/#{attribute}/all/#{URI.escape(value.to_s)}"
         end
 
         def class_method_cache_key(meth)
-          "#{name.tableize}/class_method/#{meth}"
+          "#{table_name}/class_method/#{meth}"
         end
 
       end
@@ -231,7 +231,7 @@ module Cacheable
   end
 
   def expire_attribute_cache
-    self.class.cached_indices.each do |attribute, values|
+    self.class.cached_indices.keys.each do |attribute|
       value = self.send(attribute)
       Rails.cache.delete self.class.attribute_cache_key(attribute, value)
     end
@@ -261,7 +261,7 @@ module Cacheable
   end
 
   def model_cache_key
-    "#{self.class.name.tableize}/#{self.id.to_i}"
+    "#{self.class.table_name}/#{self.id.to_i}"
   end
 
   def method_cache_key(meth)
@@ -272,7 +272,7 @@ module Cacheable
     if polymorphic
       "#{self.send("#{name}_type").tableize}/#{self.send("#{name}_id")}"
     else
-      "#{name.tableize}/#{self.send(name + "_id")}"
+      "#{table_name}/#{self.send(name + "_id")}"
     end
   end
 
